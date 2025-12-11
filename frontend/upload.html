@@ -1,0 +1,97 @@
+<!-- frontend/upload.html -->
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8"/>
+  <title>Upload File</title>
+  <link rel="stylesheet" href="style.css">
+
+  <style>
+    body { font-family: Arial; margin: 30px; }
+    #msg { margin-top: 10px; font-weight: bold; }
+  </style>
+</head>
+
+<body>
+  <h1>Upload File</h1>
+
+  <div id="userInfo"></div>
+
+  <form id="uploadForm" enctype="multipart/form-data">
+    <label>Select File:
+      <input type="file" name="file" accept=".pdf,video/mp4" required />
+    </label>
+    <br><br>
+
+    <label>Privacy:
+      <select name="privacy">
+        <option value="public">Public</option>
+        <option value="private">Private</option>
+      </select>
+    </label>
+    <br><br>
+
+    <button type="submit">Upload</button>
+  </form>
+
+  <div id="msg"></div>
+
+  <br>
+  <a href="myfiles.html">My Files</a> |
+  <a href="downloads.html">Downloads</a> |
+  <a id="logout" href="#">Logout</a>
+
+  <script>
+    const API = 'http://localhost:4000/api';
+    const token = localStorage.getItem('token');
+    const username = localStorage.getItem('username');
+
+    // Redirect if not logged in
+    if (!token) {
+      window.location = "login.html";
+    }
+
+    // Show user info
+    document.getElementById('userInfo').innerText =
+      username ? `Logged in as: ${username}` : 'Not logged in';
+
+    // Logout
+    document.getElementById('logout').addEventListener('click', () => {
+      localStorage.clear();
+      window.location = 'login.html';
+    });
+
+    // Handle upload
+    document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const fd = new FormData(e.target);
+
+      let res;
+      try {
+        res = await fetch(API + '/upload', {
+          method: 'POST',
+          headers: { 'Authorization': 'Bearer ' + token },
+          body: fd
+        });
+      } catch (err) {
+        document.getElementById('msg').innerText = "Error connecting to server.";
+        return;
+      }
+
+      const data = await res.json();
+      const msgBox = document.getElementById('msg');
+
+      if (!res.ok) {
+        msgBox.style.color = "red";
+        msgBox.innerText = data.message || "Upload failed.";
+        return;
+      }
+
+      msgBox.style.color = "green";
+      msgBox.innerText = "File uploaded successfully!";
+      e.target.reset();
+    });
+  </script>
+</body>
+</html>
