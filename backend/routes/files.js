@@ -27,7 +27,7 @@ const upload = multer({
   storage,
   limits: { fileSize: 20 * 1024 * 1024 }, // 20 MB
   fileFilter: (req, file, cb) => {
-    const allowed = ['application/pdf', 'video/mp4'];
+    const allowed = ['application/pdf', 'video/mp4', 'image/jpeg'];
     if(!allowed.includes(file.mimetype)) {
       return cb(new Error('Unsupported file type'));
     }

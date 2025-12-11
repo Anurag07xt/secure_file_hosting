@@ -29,6 +29,11 @@
       <input type="password" name="password" required minlength="6" />
     </label>
 
+    
+    <label>Re-enter Password:
+      <input type="password" name="confirmPassword" required minlength="6" />
+    </label>
+
     <button type="submit">Register</button>
   </form>
 
@@ -43,10 +48,22 @@
       e.preventDefault();
 
       const fd = new FormData(e.target);
+      const password = fd.get('password');
+      const confirmPassword = fd.get('confirmPassword');
+
+      const msg = document.getElementById('msg');
+
+      // ✅ Front-end password match check
+      if (password !== confirmPassword) {
+        msg.style.color = 'red';
+        msg.innerText = "Passwords do not match.";
+        return;
+      }
+
       const payload = {
         username: fd.get('username'),
         email: fd.get('email'),
-        password: fd.get('password')
+        password: password
       };
 
       try {
@@ -57,8 +74,6 @@
         });
 
         const data = await res.json();
-
-        const msg = document.getElementById('msg');
 
         if (!res.ok) {
           msg.style.color = 'red';
@@ -75,7 +90,8 @@
 
       } catch (err) {
         console.error(err);
-        document.getElementById('msg').innerText = "Error connecting to server.";
+        msg.style.color = 'red';
+        msg.innerText = "Error connecting to server.";
       }
     });
   </script>

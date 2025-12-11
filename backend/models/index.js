@@ -25,7 +25,18 @@ const File = sequelize.define('File', {
   size: { type: DataTypes.INTEGER, allowNull: false },
   privacy: { type: DataTypes.ENUM('public', 'private'), allowNull: false },
   uploaded_by: { type: DataTypes.INTEGER, allowNull: false },
-}, { tableName: 'files', timestamps: false });
+
+  
+  uploaded_at: {
+    type: DataTypes.DATE,
+    defaultValue: Sequelize.NOW
+  }
+}, {
+  tableName: 'files',
+  timestamps: false
+});
+
+
 
 User.hasMany(File, { foreignKey: 'uploaded_by' });
 File.belongsTo(User, { foreignKey: 'uploaded_by' });
